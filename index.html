@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casper M. Frederiksen — Data, musik & verden</title>
+<meta name="description" content="Data Manager og Bioinformatiker i København. Bygger broer mellem rå data og meningsfulde indsigter.">
+<meta property="og:title" content="Casper M. Frederiksen">
+<meta property="og:description" content="Data Manager og Bioinformatiker i København. Bygger broer mellem rå data og meningsfulde indsigter.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cmfrederiksen-lab.github.io/about/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f4f1eb;
+    --accent: #c45d3e;
+    --sage: #6b8f71;
+    --mist: #b8c4b8;
+    --warm: #d4c5a9;
+    --slate: #4a5568;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ─── Grain overlay ─── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ─── Navigation ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: difference;
+  }
+
+  nav .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.4rem;
+    color: white;
+    letter-spacing: -0.02em;
+  }
+
+  nav .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  nav .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: white;
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  nav .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: white;
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  nav .nav-links a:hover::after { width: 100%; }
+
+  /* ─── Hero ─── */
+  .hero {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 6vw;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--sage);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: slideUp 0.8s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: slideUp 0.8s 0.5s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--slate);
+    max-width: 420px;
+    font-weight: 300;
+    opacity: 0;
+    animation: slideUp 0.8s 0.7s forwards;
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    height: 100%;
+    padding: 3rem 3rem 3rem 0;
+    opacity: 0;
+    animation: fadeIn 1.2s 0.9s forwards;
+  }
+
+  .hero-img {
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero-img-inner {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: grayscale(30%) contrast(1.05);
+  }
+
+  .hero-img:hover .hero-img-inner {
+    transform: scale(1.08);
+    filter: grayscale(0%) contrast(1.1);
+  }
+
+  .hero-img:nth-child(1) .hero-img-inner {
+    background: linear-gradient(135deg, var(--sage), #3a5a40);
+  }
+  .hero-img:nth-child(2) .hero-img-inner {
+    background: linear-gradient(135deg, var(--warm), #a08060);
+  }
+  .hero-img:nth-child(3) .hero-img-inner {
+    background: linear-gradient(135deg, #5a7080, var(--slate));
+  }
+  .hero-img:nth-child(4) .hero-img-inner {
+    background: linear-gradient(135deg, var(--accent), #8b3a28);
+  }
+
+  .hero-img-label {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.85);
+    z-index: 2;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 6vw;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: slideUp 0.8s 1.2s forwards;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  .scroll-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--slate);
+  }
+
+  /* ─── Sections ─── */
+  section {
+    padding: 8rem 6vw;
+    position: relative;
+  }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--sage);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-tag::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--sage);
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+    max-width: 700px;
+  }
+
+  /* ─── About ─── */
+  .about {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .about .section-tag { color: var(--mist); }
+  .about .section-tag::before { background: var(--mist); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-top: 4rem;
+  }
+
+  .about-card {
+    padding: 2.5rem;
+    border: 1px solid rgba(244,241,235,0.08);
+    border-radius: 6px;
+    transition: all 0.5s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .about-card:hover::before { transform: scaleX(1); }
+  .about-card:hover { border-color: rgba(244,241,235,0.2); }
+
+  .about-card-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+
+  .about-card h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .about-card p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: rgba(244,241,235,0.6);
+    font-weight: 300;
+  }
+
+  /* ─── Skills marquee ─── */
+  .marquee-section {
+    padding: 3rem 0;
+    overflow: hidden;
+    border-top: 1px solid rgba(10,10,10,0.08);
+    border-bottom: 1px solid rgba(10,10,10,0.08);
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 3rem;
+    animation: marquee 30s linear infinite;
+    width: max-content;
+  }
+
+  .marquee-item {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    white-space: nowrap;
+    color: var(--ink);
+    opacity: 0.15;
+    transition: opacity 0.4s;
+  }
+
+  .marquee-item:hover { opacity: 0.6; }
+
+  .marquee-dot {
+    color: var(--accent);
+    margin: 0 0.3rem;
+  }
+
+  /* ─── Journey / Timeline ─── */
+  .journey-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    counter-reset: journey;
+  }
+
+  .journey-item {
+    padding: 2.5rem;
+    background: white;
+    border-radius: 6px;
+    position: relative;
+    transition: transform 0.4s, box-shadow 0.4s;
+    counter-increment: journey;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .journey-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  }
+
+  .journey-item::before {
+    content: counter(journey, decimal-leading-zero);
+    font-family: 'Instrument Serif', serif;
+    font-size: 4rem;
+    position: absolute;
+    top: -0.3rem;
+    right: 1.5rem;
+    color: rgba(10,10,10,0.04);
+    line-height: 1;
+  }
+
+  .journey-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .journey-item h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .journey-item p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--slate);
+    font-weight: 300;
+  }
+
+  /* ─── Interests ─── */
+  .interests {
+    background: linear-gradient(180deg, var(--paper), #ece8df);
+  }
+
+  .interests-flex {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .interest-pill {
+    padding: 1rem 2rem;
+    border: 1px solid rgba(10,10,10,0.12);
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: all 0.4s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .interest-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 0;
+    border-radius: inherit;
+  }
+
+  .interest-pill span { position: relative; z-index: 1; transition: color 0.4s; }
+
+  .interest-pill:hover::before { transform: scaleX(1); }
+  .interest-pill:hover span { color: var(--paper); }
+
+  .interest-pill .pill-icon {
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  /* ─── World map section ─── */
+  .world-stats {
+    display: flex;
+    gap: 5rem;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(10,10,10,0.08);
+  }
+
+  .stat-block .stat-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .stat-block .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--slate);
+    margin-top: 0.5rem;
+  }
+
+  /* ─── Contact ─── */
+  .contact {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    padding: 10rem 6vw;
+  }
+
+  .contact .section-tag {
+    justify-content: center;
+    color: var(--mist);
+  }
+
+  .contact .section-tag::before { background: var(--mist); }
+
+  .contact .section-title {
+    margin: 0 auto 3rem;
+    max-width: 600px;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--paper);
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    border: 1px solid rgba(244,241,235,0.2);
+    border-radius: 100px;
+    transition: all 0.4s;
+  }
+
+  .contact-link:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    background: var(--ink);
+    color: rgba(244,241,235,0.3);
+    padding: 2rem 6vw;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    border-top: 1px solid rgba(244,241,235,0.05);
+  }
+
+  /* ─── Animations ─── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(0); }
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ─── Scroll reveal ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .journey-grid { grid-template-columns: 1fr; }
+    nav { padding: 1.2rem 2rem; }
+    section { padding: 5rem 2rem; }
+    .world-stats { flex-direction: column; gap: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="logo">CMF</div>
+  <ul class="nav-links">
+    <li><a href="#about">Om</a></li>
+    <li><a href="#journey">Rejse</a></li>
+    <li><a href="#interests">Interesser</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Data Manager &bull; Bioinformatiker &bull; København</div>
+    <h1 class="hero-title">Data, musik<br>& <em>verden</em></h1>
+    <p class="hero-desc">Jeg bygger broer mellem rå data og meningsfulde indsigter — og finder inspiration i arkitektur, fotografi og kloder, der venter på at blive udforsket.</p>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image-grid">
+      <div class="hero-img">
+        <div class="hero-img-inner"></div>
+        <span class="hero-img-label">Tokyo</span>
+      </div>
+      <div class="hero-img">
+        <div class="hero-img-inner"></div>
+        <span class="hero-img-label">Galápagos</span>
+      </div>
+      <div class="hero-img">
+        <div class="hero-img-inner"></div>
+        <span class="hero-img-label">København</span>
+      </div>
+      <div class="hero-img">
+        <div class="hero-img-inner"></div>
+        <span class="hero-img-label">Peru</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll ned</span>
+  </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="section-tag reveal">Hvem er jeg</div>
+  <h2 class="section-title reveal" style="color: var(--paper);">Teknisk profil med en <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent);">kreativ sjæl</em></h2>
+  <div class="about-grid">
+    <div class="about-card reveal">
+      <div class="about-card-num">01</div>
+      <h3>Data & Databaser</h3>
+      <p>SQL Server, PostgreSQL, Oracle, MySQL — fra skemadesign til kompleks forespørgselsoptimering. Erfaring med datakvalitetssikring og kravspecifikation i sundheds-IT.</p>
+    </div>
+    <div class="about-card reveal">
+      <div class="about-card-num">02</div>
+      <h3>Programmering</h3>
+      <p>R, SAS, SQL — fra statistisk analyse og datavisualisering til kompleks databehandling. Passion for at finde elegante løsninger til komplekse problemer.</p>
+    </div>
+    <div class="about-card reveal">
+      <div class="about-card-num">03</div>
+      <h3>Forskning & AI</h3>
+      <p>Bioinformatik, Bayesiansk modellering og AI-assisteret forskning. Bygger værktøjer der forbinder akademisk viden med praktisk anvendelse.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Skills Marquee -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">SQL <span class="marquee-dot">·</span> PostgreSQL <span class="marquee-dot">·</span> R <span class="marquee-dot">·</span> SAS <span class="marquee-dot">·</span> Data Quality <span class="marquee-dot">·</span> Bioinformatics <span class="marquee-dot">·</span> Bayesian Modeling <span class="marquee-dot">·</span> Health IT <span class="marquee-dot">·</span> Machine Learning <span class="marquee-dot">·</span> Visualization</span>
+    <span class="marquee-item">SQL <span class="marquee-dot">·</span> PostgreSQL <span class="marquee-dot">·</span> R <span class="marquee-dot">·</span> SAS <span class="marquee-dot">·</span> Data Quality <span class="marquee-dot">·</span> Bioinformatics <span class="marquee-dot">·</span> Bayesian Modeling <span class="marquee-dot">·</span> Health IT <span class="marquee-dot">·</span> Machine Learning <span class="marquee-dot">·</span> Visualization</span>
+  </div>
+</div>
+
+<!-- Journey -->
+<section id="journey">
+  <div class="section-tag reveal">Udvalgte projekter</div>
+  <h2 class="section-title reveal">Fra data til <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent);">handling</em></h2>
+  <div class="journey-grid">
+    <div class="journey-item reveal">
+      <div class="journey-year">2026 — Live system</div>
+      <h3>Bayesiansk valgprognose</h3>
+      <p>Live dashboard til Folketingsvalget med Monte Carlo-simulering, poll-aggregering og mediesentimentsanalyse. Modellen forudsagde korrekt vindende blok.</p>
+    </div>
+    <div class="journey-item reveal">
+      <div class="journey-year">2026 — Forskning</div>
+      <h3>AI-assisteret litteraturudtræk</h3>
+      <p>Omfattende guide på ~38.000 ord om systematisk litteraturudtræk i biovidenskab — fra klassifikationskoder til verifikationskaskader.</p>
+    </div>
+    <div class="journey-item reveal">
+      <div class="journey-year">Igangværende</div>
+      <h3>SIBYL</h3>
+      <p>Domæne-agnostisk selvforbedrende AI-system med lokal LLM, ML-ensemble, RAG og LoRA/DPO fine-tuning i et lukket feedback-loop.</p>
+    </div>
+    <div class="journey-item reveal">
+      <div class="journey-year">Analyse</div>
+      <h3>Geopolitisk risikoanalyse</h3>
+      <p>Flerfaset analyse af ARKON-rapport om Iran-konflikten: retorisk analyse, logisk inferens-udtræk og systematisk faktatjek.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Interests -->
+<section class="interests" id="interests">
+  <div class="section-tag reveal">Udover data</div>
+  <h2 class="section-title reveal">Sådan <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent);">kobler jeg af</em> i fritiden</h2>
+  <div class="interests-flex reveal">
+    <div class="interest-pill"><span><span class="pill-icon">📷</span> Fotografi</span></div>
+    <div class="interest-pill"><span><span class="pill-icon">🎵</span> Musikproduktion</span></div>
+    <div class="interest-pill"><span><span class="pill-icon">🏛️</span> Arkitektur</span></div>
+    <div class="interest-pill"><span><span class="pill-icon">✈️</span> Rejser</span></div>
+    <div class="interest-pill"><span><span class="pill-icon">🎬</span> Film & Serier</span></div>
+    <div class="interest-pill"><span><span class="pill-icon">📊</span> Datavisualisering</span></div>
+  </div>
+  <div class="world-stats reveal">
+    <div class="stat-block">
+      <div class="stat-num">17+</div>
+      <div class="stat-label">Lande besøgt</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Kontinenter</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Nysgerrighed</div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+  <div class="section-tag reveal">Lad os tale</div>
+  <h2 class="section-title reveal">Har du et projekt i tankerne?</h2>
+  <div class="contact-links reveal">
+    <a href="https://linkedin.com/in/cmfrederiksen/" class="contact-link" target="_blank">LinkedIn</a>
+    <a href="https://github.com/cmfrederiksen-lab" class="contact-link" target="_blank">GitHub</a>
+    <a href="mailto:hello@cmfrederiksen.dk" class="contact-link">Email</a>
+    <a href="https://orcid.org/0009-0006-6074-1769" class="contact-link" target="_blank">ORCID</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span>© 2026 Casper M. Frederiksen</span>
+  <span>København, Danmark</span>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth parallax on hero image grid
+  const heroGrid = document.querySelector('.hero-image-grid');
+  if (heroGrid) {
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      if (scrolled < window.innerHeight) {
+        heroGrid.style.transform = `translateY(${scrolled * 0.1}px)`;
+      }
+    });
+  }
+
+  // Nav background on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 100) {
+      nav.style.mixBlendMode = 'normal';
+      nav.style.background = 'rgba(10,10,10,0.9)';
+      nav.style.backdropFilter = 'blur(10px)';
+    } else {
+      nav.style.mixBlendMode = 'difference';
+      nav.style.background = 'transparent';
+      nav.style.backdropFilter = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>
